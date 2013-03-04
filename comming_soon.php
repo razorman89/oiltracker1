@@ -4,7 +4,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 	<meta name="oiltracker1" content="project 2013">
 	<link rel="stylesheet" type="text/css" href="main.css"/>
-	<title>Oiltracker1 - Welcome</title>
+	<title>Oiltracker1 - CONSTRUCTION</title>
 	 
 	<script src="js/jquery.js"></script>
 	<script src="highcharts/js/highcharts.js"></script>
@@ -29,8 +29,7 @@
 		<div id="page_left"></div>
 		
 		<div id="page_center">
-		
-		<h1>WELCOME MESSAGE HERE</h1>
+		<h1>SITE UNDER CONSTRUCTION</h1>
 
 		</div>
 		

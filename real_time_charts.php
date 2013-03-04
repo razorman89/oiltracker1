@@ -4,7 +4,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 	<meta name="oiltracker1" content="project 2013">
 	<link rel="stylesheet" type="text/css" href="main.css"/>
-	<title>Oiltracker1 - Welcome</title>
+	<title>Oiltracker1 - Real time</title>
 	 
 	<script src="js/jquery.js"></script>
 	<script src="highcharts/js/highcharts.js"></script>
@@ -17,6 +17,29 @@
 	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/charts.js" type="text/javascript"></script>
 	<script src="highcharts/js/themes/gray.js"></script>
+	
+	<script type="text/javascript">
+
+	console.log(" ** document ready ** ");
+	
+	jQuery(document).ready(function() {
+		var refresh_rate = 1000;
+		
+		drawRealCharts();
+		reScan();
+		
+		function reScan() {
+			console.log(" ** RESCANNING CHART DATA ** ");
+			
+			update_chart("temp", chart_temp, "update");
+			update_chart("flow", chart_flow, "update");
+			update_chart("levl", chart_levl, "update");
+			setTimeout(reScan, refresh_rate);
+
+		}
+		    
+	});
+	</script>
 
 </head>
 <body>
@@ -29,9 +52,9 @@
 		<div id="page_left"></div>
 		
 		<div id="page_center">
-		
-		<h1>WELCOME MESSAGE HERE</h1>
-
+			<div id="temp_container"></div>
+			<div id="flow_container"></div>
+			<div id="dist_container"></div>
 		</div>
 		
 		<div id="nav_bar">
