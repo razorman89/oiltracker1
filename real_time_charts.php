@@ -25,15 +25,15 @@
 	jQuery(document).ready(function() {
 		var refresh_rate = 1000;
 		
-		drawRealCharts();
+		draw_RT_charts();
 		reScan();
 		
 		function reScan() {
 			console.log(" ** RESCANNING CHART DATA ** ");
 			
-			update_chart("temp", chart_temp, "update");
-			update_chart("flow", chart_flow, "update");
-			update_chart("levl", chart_levl, "update");
+			update_RT_chart("temp", chartRT_temp, "update");
+			update_RT_chart("flow", chartRT_flow, "update");
+			update_RT_chart("levl", chartRT_levl, "update");
 			setTimeout(reScan, refresh_rate);
 
 		}
@@ -54,7 +54,7 @@
 		<div id="page_center">
 			<div id="temp_container"></div>
 			<div id="flow_container"></div>
-			<div id="dist_container"></div>
+			<div id="levl_container"></div>
 		</div>
 		
 		<div id="nav_bar">
@@ -62,7 +62,7 @@
 		        <li class="animation"><a href="index.php">Welcome</a></li>
 		       	<li class="animation"><a href="comming_soon.php">About Project</a></li>
 		       	<li class="animation"><a href="real_time_charts.php">Real Time Charts</a></li>
-		        <li class="animation"><a href="comming_soon.php">History Charts</a></li>
+		        <li class="animation"><a href="history_charts.php">History Charts</a></li>
 		        <li class="animation"><a href="comming_soon.php">Prediction Charts</a></li>
 		    </ul>
 		</div>

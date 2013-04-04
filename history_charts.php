@@ -4,19 +4,26 @@
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 	<meta name="oiltracker1" content="project 2013">
 	<link rel="stylesheet" type="text/css" href="main.css"/>
-	<title>Oiltracker1 - CONSTRUCTION</title>
+	<title>Oiltracker1 - History</title>
 	 
-	<script src="js/jquery.js"></script>
-	<script src="highcharts/js/highcharts.js"></script>
+	<script src="js/jquery.js"></script>	
+	<script src="highstock/js/highstock.js"></script>
 	
-	<!-- 
-	<script src="highcharts/js/highcharts.js" type="text/javascript"></script>
-	<script src="highcharts/js/modules/exproting.js" type="text/javascript"></script>
-	-->
-	
-	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/charts.js" type="text/javascript"></script>
 	<script src="highcharts/js/themes/gray.js"></script>
+	
+	<script type="text/javascript">
+
+	console.log(" ** document ready ** ");
+	
+	jQuery(document).ready(function() {
+		
+		load_HS_chart("temp", "history");
+		load_HS_chart("flow", "history");
+		load_HS_chart("levl", "history");
+		    
+	});
+	</script>
 
 </head>
 <body>
@@ -26,11 +33,16 @@
 		<div id="header"></div>
 		<div id="header_line"></div>
 	
-		<div id="page_left"></div>
+		<div id="page_left">
+			<div id="temp_settings"></div>
+			<div id="flow_settings"></div>
+			<div id="levl_settings"></div>
+		</div>
 		
 		<div id="page_center">
-		<h1>SITE UNDER CONSTRUCTION</h1>
-
+			<div id="temp_container"></div>
+			<div id="flow_container"></div>
+			<div id="levl_container"></div>
 		</div>
 		
 		<div id="nav_bar">

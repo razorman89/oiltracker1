@@ -1,302 +1,556 @@
-var chart_temp;
-var chart_flow;
-var chart_dist;
+// Highcharts loading style for realtime charts, preventing code bloat as it is reused several times
+var loading_style_RT = {
+	hideDuration : 2500,
+	showDuration : 1500,
+	labelStyle : {
+		fontWeight : 'bold',
+		position : 'relative',
+		top : '45%',
+		color : 'white'
+	},
+	style : {
+		position : 'absolute',
+		backgroundColor : 'black',
+		opacity : 0.4,
+		textAlign : 'center'
+	}
+};
+
+// Highcharts loading style for history stockcharts, preventing code bloat as it is reused several times
+var loading_style_HS = {
+	hideDuration : 2500,
+	showDuration : 500,
+	labelStyle : {
+		fontWeight : 'bold',
+		position : 'relative',
+		top : '45%',
+		color : 'white'
+	},
+	style : {
+		position : 'absolute',
+		backgroundColor : 'black',
+		opacity : 0.8,
+		textAlign : 'center'
+	}
+};
+
 var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
 var temp_max_index, flow_max_index, dist_max_index;
 
-function drawRealCharts() {
-	
-	console.log(" ** creating chart object ** ");
-	
-	chart_temp = new Highcharts.Chart({
-	    
-        chart: {
-            renderTo: 'temp_container',
-            type: 'spline',
-	        borderWidth: 2,
-	        events: {
-	        	load: function() {
-	        		chart_temp = this; // `this` is the reference to the chart
-	        		init_chart("temp", chart_temp, "init");
-	        	}
-	        }
+/**
+ * Creates & initialises three realtime HighChart.Chart objects
+ * @author Derek O'Connor
+ * @param none
+ * @this Highcharts.Chart
+ * @see	#init_RT_chart()
+ * @return Highcharts.Chart, (chartRT_temp, chartRT_flow, chartRT_levl)
+ */
+function draw_RT_charts() {
 
-        },
-        
-        plotOptions: {
-            line: {
-                animation: true
-            }
-        },
-        		        
-        title: {
-	        
-            text: 'Temperature Readings'
-	            
-        },
-        
-        xAxis: {
-	        
-	        
-            type: 'datetime',
-
-            title: {
-                text: 'Date / Time'
-            }
-			       
-        },
-        
-        yAxis: {
-	        
-            title: {
-                text: 'Temperature Degrees C'
-            }
-        
-        },
-        
-        series: [{
-        	
-        	name: 'External Temperature',
-            data: []
-
-        }]
-        
-    });
-	
-	/***********************************************************************************************/
-	
-	chart_flow = new Highcharts.Chart({
-	    
-        chart: {
-            renderTo: 'flow_container',
-            type: 'spline',
-	        borderWidth: 2,
-	        events: {
-	        	load: function() {
-	        		chart_flow = this; // `this` is the reference to the chart
-	        		init_chart("flow", chart_flow, "init");
-	        	}
-	        }
-        },
-        
-        plotOptions: {
-            line: {
-                animation: true
-            }
-        },
-        		        
-        title: {
-	        
-            text: 'Flow Readings'
-	            
-        },
-        
-        xAxis: {
-	        
-	        
-            type: 'datetime',
-            tickPixelInterval: 150,
-
-            title: {
-                text: 'Date / Time'
-            }
-        
-            /**
-            labels: {
-                formatter: function() {
-                    var monthStr = Highcharts.dateFormat('%b', this.value);
-                    var firstLetter = monthStr.substring(0, 1);
-                    return firstLetter;
-                }
-        	}
-		*WORKING HERE LAST FORMATTING THE LABELS*/ 	     
-			       
-        },
-        
-        yAxis: {
-	        
-            title: {
-                text: 'Flow in Liters'
-            }
-        
-        },
-        
-        series: [{
-
-            data: []
-        }]
-        
-    });
-	
-	/***********************************************************************************************/
-	
-	chart_levl = new Highcharts.Chart({
-	    
-        chart: {
-            renderTo: 'dist_container',
-            type: 'column',
-	        borderWidth: 2,
-	        events: {
-	        	load: function() {
-	        		chart_levl = this; // `this` is the reference to the chart
-	        		init_chart("levl", chart_levl, "init");
-	        	}
-	        }
-        },
-        
-        plotOptions: {
-            line: {
-                animation: true
-            }
-        },
-        		        
-        title: {
-	        
-            text: 'Tank Levels'
-	            
-        },
-        
-        xAxis: {
-	        
-	        
-            type: 'datetime',
-            tickPixelInterval: 150,
-
-            title: {
-                text: 'Date / Time'
-            }
-        
-            /**
-            labels: {
-                formatter: function() {
-                    var monthStr = Highcharts.dateFormat('%b', this.value);
-                    var firstLetter = monthStr.substring(0, 1);
-                    return firstLetter;
-                }
-        	}
-		*WORKING HERE LAST FORMATTING THE LABELS*/ 	     
-			       
-        },
-        
-        yAxis: {
-	        
-            title: {
-                text: 'Range to Oil in CM'
-            }
-        
-        },
-        
-        series: [{
-
-            data: []
-        }]
-        
-    });
-
-}
-
-
-function update_chart(type, chart, action){
-	
-	console.log(" ** requesting to update chart data ** ");
-	$.post('php/get_data.php/', { dataType: type, actionType: action }, function (data) {
+	console.log(" ** creating real time chart elements ** ");
+	/*
+	 * create realtime temperature chart
+	 */
+	chartRT_temp = new Highcharts.Chart({
+		// chart options
+		chart : {
+			renderTo : 'temp_container',
+			type : 'spline',
+			borderWidth : 2,
+			zoomType: 'xy',
+			events : {
+				load : function() {
+					chartRT_temp = this; // `this` is the reference to the chart
+					this.showLoading();  //  display loading overlay
+					init_RT_chart("temp", chartRT_temp, "init"); // load last ten values to init the chart
+				}
+			}
+		},
 		
-	    if(data.status == 'ok') {	
-	    	
-	    	console.log(" ** data status: ok ** ");
-	    	var pointChart = new Array(data.xvalue, data.yvalue);
+		loading : loading_style_RT, // loading options defined above
 
-	    	if(type == "temp") {
-	    		
-		    	if(data.index != temp_max_index) {
-		    		
-		    		chart.series[0].addPoint(pointChart, true, true);
-		    		console.log(" ** temp chart updated ** ");
-		    		temp_max_index = data.index;
-		    		
-		    	}
-		    	
-		    	else{
-		    		
-		    		console.log(" ** no new temp data ** ");
-		    		
-		    	}
-	    		
-	    	}
-	    	
-	    	else if(type == "flow") {
-	    		
-		    	if(data.index != flow_max_index) {
-		    		
-		    		chart.series[0].addPoint(pointChart, true, true);
-		    		console.log(" ** flow chart updated ** ");
-		    		flow_max_index = data.index;
-		    		
-		    	}
-		    	
-		    	else{
-		    		
-		    		console.log(" ** no new flow data ** ");
-		    		
-		    	}
-	    		
-	    	}
-	    	
-	    	else if(type == "levl") {
-	    		
-		    	if(data.index != dist_max_index) {
-		    		
-		    		chart.series[0].addPoint(pointChart, true, true);
-		    		console.log(" ** level chart updated ** ");
-		    		dist_max_index = data.index;
-		    		
-		    	}
-		    	
-		    	else{
-		    		
-		    		console.log(" ** no new level data ** ");
-		    		
-		    	}
-	    		
-	    	}
-	    	
-	    	else {
-	    		
-	    		console.log(" ** error selecting 'type' ** ");
-	    		
-	    	}		
+		plotOptions : {
+			line : {
+				animation : true
+			}
+		},
 
-	    }
-	    
-	    else{
-		    
-	    	console.log(" ** data status: corrupt / not set ** ");
-	    	
-	    }
-	    
-	}, "json");
-	
+		title : {
+
+			text : 'Temperature Readings'
+
+		},
+
+		xAxis : {
+
+			type : 'datetime',
+			tickPixelInterval : 150,
+
+			title : {
+				text : 'Date / Time'
+			}
+
+		},
+
+		yAxis : {
+
+			title : {
+				text : 'Temperature Degrees °C'
+			}
+
+		},
+
+		tooltip : {
+			followPointer : true
+
+		},
+
+		series : [ {
+
+			name : 'External Temperature °C',
+			data : []
+
+		} ]
+
+	});
+
+	/***********************************************************************************************/
+	/*
+	 * create realtime flow chart
+	 */
+	chartRT_flow = new Highcharts.Chart({
+
+		chart : {
+			renderTo : 'flow_container',
+			type : 'spline',
+			borderWidth : 2,
+			zoomType: 'xy',
+			events : {
+				load : function() {
+					chartRT_flow = this; // `this` is the reference to the chart
+					this.showLoading();  //  display loading overlay
+					init_RT_chart("flow", chartRT_flow, "init"); // load last ten values to init the chart
+				}
+			}
+		},
+
+		loading : loading_style_RT, // loading options defined above
+
+		plotOptions : {
+			line : {
+				animation : true
+			}
+		},
+
+		title : {
+
+			text : 'Oil Flow'
+
+		},
+
+		xAxis : {
+			type : 'datetime',
+			tickPixelInterval : 150,
+
+			title : {
+				text : 'Date / Time'
+			}
+		},
+
+		yAxis : {
+
+			title : {
+				text : 'Flow in Liters'
+			}
+
+		},
+
+		tooltip : {
+
+		},
+
+		series : [ {
+			name : 'Liters per Minute',
+			data : []
+		}, {
+			name : '€ost per Minute',
+			data : []
+		}]
+
+	});
+
+	/***********************************************************************************************/
+	/*
+	 * create realtime level chart
+	 */
+	chartRT_levl = new Highcharts.Chart({
+
+		chart : {
+			renderTo : 'levl_container',
+			type : 'bar',
+			borderWidth : 2,
+			spacingRight : 30,
+			events : {
+				load : function() {
+					chartRT_levl = this; // `this` is the reference to the chart
+					this.showLoading();  //  display loading overlay
+					init_RT_chart("levl", chartRT_levl, "init"); // load last ten values to init the chart
+				}
+			}
+		},
+
+		loading : loading_style_RT, // loading options defined above
+
+		plotOptions : {
+			line : {
+				animation : true
+			}
+		},
+
+		title : {
+
+			text : 'Tank Level'
+
+		},
+
+		xAxis : {
+
+			labels : {
+				rotation : -90,
+				align : 'right',
+				style : {
+					fontSize : '.001px',
+				}
+			},
+			type : 'datetime',
+			tickPixelInterval : 150,
+
+			title : {
+				text : 'Date / Time'
+			}
+		},
+
+		yAxis : {
+			min : 0,
+			max : 100,
+			title : {
+				text : '% of Oil in Tank'
+			}
+
+		},
+
+		tooltip : {
+
+		},
+
+		series : [ {
+			name : 'Oil Remaining',
+			data : []
+		} ]
+
+	});
+
 }
 
-function init_chart(type, chart, action){
-	
-	console.log(" ** requesting initial chart data ** ");
-	
-    $.post('php/get_data.php/', { dataType: type, actionType: action }, function (data) {
-    	
-	    if(data.status == 'ok'){
-	    	
-	    	console.log(" ** data status: ok ** ");
-			chart.series[0].setData(data.series_data);
-			console.log(" ** chart initialised ** ");
+/**
+ * Creates three history HighChart.StockChart objects
+ * @author Derek O'Connor
+ * @param type The type of data temp_history, flow_history, levl_history
+ * @param data The data for graphing JSON encoded
+ * @this Highcharts.StockChart
+ * @return none
+ */
+function draw_HS_chart(type, data) {
 
-	    }
-	    
-	    else{
-		    
-	    	console.log(" ** data status: corrupt / not set ** ");
-	    	
-	    }
-	    
+	if (type == 'temp_history') {
+
+		chartHS_temp = new Highcharts.StockChart({
+
+			chart : {
+				renderTo : 'temp_container',
+				type : 'areaspline',
+				events : {
+					load : function() {
+						chartHS_temp = this; // 'this' is the reference to the chart
+						this.showLoading();
+					}
+				}
+
+			},
+
+			loading : loading_style_HS,
+
+			rangeSelector : {
+				selected : 1
+			},
+
+			title : {
+				text : 'Temperature History'
+			},
+
+			series : [ {
+				name : 'Temp',
+				data : data,
+				tooltip : {
+					valueDecimals : 2
+				}
+			} ]
+		});
+		setTimeout(function() {
+			chartHS_temp.hideLoading();
+		}, 500);
+	}
+
+	else if (type == 'flow_history') {
+
+		chartHS_flow = new Highcharts.StockChart({
+
+			chart : {
+				renderTo : 'flow_container',
+				type : 'areaspline',
+				events : {
+					load : function() {
+						chartHS_flow = this; // 'this' is the reference to the chart
+						this.showLoading();
+					}
+				}
+			},
+
+			loading : loading_style_HS,
+
+			rangeSelector : {
+				selected : 1
+			},
+
+			title : {
+				text : 'Oil Flow History'
+			},
+
+			series : [ {
+				name : 'Liters per Minute',
+				data : data,
+				tooltip : {
+					valueDecimals : 2
+				}
+			} ]
+		});
+		setTimeout(function() {
+			chartHS_flow.hideLoading();
+		}, 500);
+	}
+
+	else if (type == 'levl_history') {
+
+		chartHS_levl = new Highcharts.StockChart({
+
+			chart : {
+				renderTo : 'levl_container',
+				type : 'areaspline',
+				events : {
+					load : function() {
+						chartHS_levl = this; // 'this' is the reference to the chart
+						this.showLoading();
+					}
+				}
+			},
+
+			loading : loading_style_HS,
+
+			rangeSelector : {
+				selected : 1
+			},
+
+			title : {
+				text : 'Tank Level History'
+			},
+
+			series : [ {
+				name : '% in Tank',
+				data : data,
+				tooltip : {
+					valueDecimals : 2
+				}
+			} ]
+		});
+		setTimeout(function() {
+			chartHS_levl.hideLoading();
+		}, 500);
+	}
+}
+
+/**
+ * Upadates realtime charts via ajaxiation, only pushes new data to series
+ * @author Derek O'Connor
+ * @param type The chart type to update temp, flow, levl
+ * @param chart A referance to the chart object allowing new data points to be pushed onto the series
+ * @param action Selector used in 'get_data.php'
+ * @see php/get_data.php/
+ * @return Json encoded string with single key, value pair of latest databse value
+ */
+function update_RT_chart(type, chart, action) {
+
+	console.log(" ** requesting to update chart data ** ");
+	$.post('php/get_data.php/', {
+		dataType : type,
+		actionType : action
+	}, function(data) {
+
+		if (data.status == 'ok') {
+
+			console.log(" ** data status: ok ** ");
+			var pointChart1 = new Array(data.xvalue, data.yvalue);
+			var series = chart.series[0], shift1 = series.data.length >= 10; // shift after 10 values are loaded
+			shift2 = series.data.length > 0; // shift after one value is loaded
+
+			if (type == "temp") {
+
+				if (data.index != temp_max_index) {
+
+					chart.series[0].addPoint(pointChart1, true, shift1);
+					console.log(" ** temp chart updated ** ");
+					temp_max_index = data.index; // keep track of the max index of the database
+
+				}
+
+				else {
+
+					console.log(" ** no new temp data ** ");
+
+				}
+
+			}
+
+			else if (type == "flow") {
+
+				if (data.index != flow_max_index) {
+					
+					var pointChart2 = new Array(data.xvalue, data.costvalue);
+
+					chart.series[0].addPoint(pointChart1, true, shift1);
+					chart.series[1].addPoint(pointChart2, true, shift1);
+					console.log(" ** flow chart updated ** ");
+					flow_max_index = data.index; // keep track of the max index of the database
+
+				}
+
+				else {
+
+					console.log(" ** no new flow data ** ");
+
+				}
+
+			}
+
+			else if (type == "levl") {
+
+				if (data.index != dist_max_index) {
+
+					chart.series[0].addPoint(pointChart1, true, shift2);
+					console.log(" ** level chart updated ** ");
+					dist_max_index = data.index; // keep track of the max index of the database
+
+				}
+
+				else {
+
+					console.log(" ** no new level data ** ");
+
+				}
+
+			}
+
+			else {
+
+				console.log(" ** error selecting 'type' ** ");
+
+			}
+
+		}
+
+		else {
+
+			console.log(" ** data status: corrupt / not set ** ");
+
+		}
+
+	}, "json");
+
+}
+
+/**
+ * Initialise realtime charts via ajaxiation,
+ * @author Derek O'Connor
+ * @param type The chart type to update temp, flow, levl
+ * @param chart A referance to the chart object allowing series[0] to be set
+ * @param action Selector used in 'get_data.php'
+ * @see php/get_data.php/
+ * @return Json encoded string containing either 10 or 1 data points
+ */
+function init_RT_chart(type, chart, action) {
+
+	console.log(" ** requesting initial chart data ** ");
+
+	$.post('php/get_data.php/', {
+		dataType : type,
+		actionType : action
+	}, function(data) {
+
+		if (data.status == 'ok') {
+
+			console.log(" ** data status: ok ** ");
+			if(type == 'flow'){
+				chart.series[0].setData(data.series_ltrs_data);
+				chart.series[1].setData(data.series_cost_data);
+			}
+			
+			else {
+				chart.series[0].setData(data.series_data);
+			}
+			
+			console.log(" ** chart initialised ** ");
+			chart.hideLoading();
+
+		}
+
+		else {
+
+			console.log(" ** data status: corrupt / not set ** ");
+
+		}
+
+	}, "json");
+}
+
+/**
+ * Load get data for history chart via ajaxiation, then passes this data to 'draw_HS_chart' function
+ * @param type The chart type to update temp, flow, levl
+ * @param action Selector used in 'get_data.php'
+ * @see php/get_data.php/
+ * @see #draw_HS_chart()
+ * @return Json encoded string containing all data in SQL table
+ */
+function load_HS_chart(type, action) {
+
+	console.log(" ** requesting chart history ** ");
+
+	$.post('php/get_data.php/', {
+		dataType : type,
+		actionType : action
+	}, function(data) {
+
+		if (data.status == 'ok') {
+
+			console.log(" ** data status: ok ** ");
+			draw_HS_chart(data.type, data.history_data);
+			console.log(" ** chart initialised, '" + data.type
+					+ "' data loaded ** ");
+		}
+
+		else {
+
+			console.log(" ** data status: corrupt / not set ** ");
+
+		}
+
 	}, "json");
 }

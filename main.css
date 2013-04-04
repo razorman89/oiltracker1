@@ -148,7 +148,7 @@ div#flow_container {
 	margin-bottom:12px;
 
 }
-div#dist_container {
+div#levl_container {
 	
 	width:96%;
 	height:265px;
@@ -305,3 +305,5 @@ div#footer_line{
 	position:relative;
 	
 }
+
+

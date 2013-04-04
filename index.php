@@ -39,7 +39,7 @@
 		        <li class="animation"><a href="index.php">Welcome</a></li>
 		       	<li class="animation"><a href="comming_soon.php">About Project</a></li>
 		       	<li class="animation"><a href="real_time_charts.php">Real Time Charts</a></li>
-		        <li class="animation"><a href="comming_soon.php">History Charts</a></li>
+		        <li class="animation"><a href="history_charts.php">History Charts</a></li>
 		        <li class="animation"><a href="comming_soon.php">Prediction Charts</a></li>
 		    </ul>
 		</div>
