@@ -3,7 +3,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
 	<meta name="oiltracker1" content="project 2013">
-	<link rel="stylesheet" type="text/css" href="main.css"/>
+	<link rel="stylesheet" type="text/css" href="styles/main.css"/>
 	<title>Oiltracker1 - Welcome</title>
 	 
 	<script src="js/jquery.js"></script>
@@ -40,7 +40,7 @@
 		       	<li class="animation"><a href="comming_soon.php">About Project</a></li>
 		       	<li class="animation"><a href="real_time_charts.php">Real Time Charts</a></li>
 		        <li class="animation"><a href="history_charts.php">History Charts</a></li>
-		        <li class="animation"><a href="comming_soon.php">Prediction Charts</a></li>
+		        <li class="animation"><a href="settings.php">System Settings</a></li>
 		    </ul>
 		</div>
 		

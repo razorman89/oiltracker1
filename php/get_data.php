@@ -33,13 +33,11 @@ if($action_type == "init") {
 			
 			$data = getInitFlow($db);
 			echo $data;
-			//echo json_encode(array('status' => 'ok', 'series_data' => $data));
 		}
 		
 		else if($data_type == "levl") {
 		
 			$data = getInitLevl($db);
-		
 			echo json_encode(array('status' => 'ok', 'series_data' => $data));
 		}
 		
@@ -79,7 +77,7 @@ else if($action_type == "update") {
 		
 		else if($data_type == "levl") {
 		
-			$data = getLastLevl($db);
+			$data = getLatestLevl($db);
 			echo $data;
 		
 		}
@@ -89,7 +87,6 @@ else if($action_type == "update") {
 			echo json_encode(array('status' => 'bad', 'latest_series_data' => "NOT SET"));
 				
 		}
-		
 		
 	}
 	
@@ -139,6 +136,97 @@ else if($action_type == "history") {
 		
 	}
 	
+}
+
+else if($action_type == "var_init") {
+	if (mysqli_connect_errno($db)) {
+		console.log(" ** database connect error using default data ** ");
+		echo json_encode(array('status' => 'database_error_update', 'latest_series_data' => 'no data available'));
+	
+	}
+	
+	else {
+		
+		$data_type = $_POST['dataType'];
+		
+		if($data_type == "levl") {
+		
+			$maxLitres = getMaxLitres($db);
+				
+			echo json_encode(array('status' => 'ok', 'maxLitres' => $maxLitres));
+		}
+	}
+}
+
+else if($action_type == "settings_read") {
+	
+	if (mysqli_connect_errno($db)) {
+		console.log(" ** database connect error using default data ** ");
+		echo json_encode(array('status' => 'database_error_update', 'latest_series_data' => 'no data available'));
+	
+	}
+	
+	else {
+		
+		$data_type = $_POST['dataType'];
+		if($data_type == "read_settings") {
+		
+			$data = getSettings($db);
+			echo $data;
+		}
+		
+		else if ($data_type == "profiled_litres") {
+			
+			$maxLitres = getMaxLitres($db);
+			echo json_encode(array('status' => 'ok', 'maxLitres' => $maxLitres));
+
+		}
+		
+		else if ($data_type == "tank_stats") {
+				
+			$data = getTankStats($db);
+			echo $data;
+		
+		}
+		
+	}	
+	
+}
+
+else if($action_type == "settings_write") {
+
+	if (mysqli_connect_errno($db)) {
+		console.log(" ** database connect error using default data ** ");
+		echo json_encode(array('status' => 'database_error_update', 'latest_series_data' => 'no data available'));
+
+	}
+
+	else {
+		
+		$data_type = $_POST['dataType'];
+		if($data_type == "fuel_price") {
+			
+			$newPrice = $_POST['newData'];
+			updateFuelSettings($db, $newPrice);
+			
+		}
+		
+		else if($data_type == "temp_read_interval") {
+			
+			$newInterval = $_POST['newData'];
+			updateTempSettings($db, $newInterval);
+			
+		}
+		
+		else if($data_type == "profile_status") {
+				
+			$newStatus = $_POST['newData'];
+			updateProfileSettings($db, $newStatus);
+				
+		}
+
+	}
+
 }
 
 ?>

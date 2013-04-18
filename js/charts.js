@@ -37,6 +37,12 @@ var loading_style_HS = {
 var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
 var temp_max_index, flow_max_index, dist_max_index;
 
+Highcharts.setOptions({
+	global: {
+		useUTC: false
+	}
+});
+
 /**
  * Creates & initialises three realtime HighChart.Chart objects
  * @author Derek O'Connor
@@ -45,7 +51,7 @@ var temp_max_index, flow_max_index, dist_max_index;
  * @see	#init_RT_chart()
  * @return Highcharts.Chart, (chartRT_temp, chartRT_flow, chartRT_levl)
  */
-function draw_RT_charts() {
+function draw_RT_charts(maxLitres) {
 
 	console.log(" ** creating real time chart elements ** ");
 	/*
@@ -166,6 +172,7 @@ function draw_RT_charts() {
 		},
 
 		tooltip : {
+			followPointer : true
 
 		},
 
@@ -194,7 +201,7 @@ function draw_RT_charts() {
 				load : function() {
 					chartRT_levl = this; // `this` is the reference to the chart
 					this.showLoading();  //  display loading overlay
-					init_RT_chart("levl", chartRT_levl, "init"); // load last ten values to init the chart
+					//init_RT_chart("levl", chartRT_levl, "init"); // load last ten values to init the chart
 				}
 			}
 		},
@@ -226,25 +233,26 @@ function draw_RT_charts() {
 			tickPixelInterval : 150,
 
 			title : {
-				text : 'Date / Time'
+				
 			}
 		},
 
 		yAxis : {
 			min : 0,
-			max : 100,
+			max : maxLitres,
 			title : {
-				text : '% of Oil in Tank'
+				text : 'Approximate Litres in Tank'
 			}
 
 		},
 
 		tooltip : {
+			followPointer : true
 
 		},
 
 		series : [ {
-			name : 'Oil Remaining',
+			name : 'Litres: ',
 			data : []
 		} ]
 
@@ -399,25 +407,23 @@ function update_RT_chart(type, chart, action) {
 
 			console.log(" ** data status: ok ** ");
 			var pointChart1 = new Array(data.xvalue, data.yvalue);
-			var series = chart.series[0], shift1 = series.data.length >= 10; // shift after 10 values are loaded
-			shift2 = series.data.length > 0; // shift after one value is loaded
+			var series = chart.series[0];
+			var shiftTemp = series.data.length >= 10; // shift after 10 values are loaded
+			var shiftFlow = series.data.length > 7; // shift after 7 values are loaded
+			var shiftLevl = series.data.length > 0; // shift after one value is loaded
 
 			if (type == "temp") {
 
 				if (data.index != temp_max_index) {
 
-					chart.series[0].addPoint(pointChart1, true, shift1);
+					chart.series[0].addPoint(pointChart1, true, shiftTemp);
 					console.log(" ** temp chart updated ** ");
 					temp_max_index = data.index; // keep track of the max index of the database
-
 				}
 
 				else {
-
 					console.log(" ** no new temp data ** ");
-
 				}
-
 			}
 
 			else if (type == "flow") {
@@ -425,52 +431,32 @@ function update_RT_chart(type, chart, action) {
 				if (data.index != flow_max_index) {
 					
 					var pointChart2 = new Array(data.xvalue, data.costvalue);
-
-					chart.series[0].addPoint(pointChart1, true, shift1);
-					chart.series[1].addPoint(pointChart2, true, shift1);
+					chart.series[0].addPoint(pointChart1, true, shiftFlow);
+					chart.series[1].addPoint(pointChart2, true, shiftFlow);
 					console.log(" ** flow chart updated ** ");
 					flow_max_index = data.index; // keep track of the max index of the database
-
 				}
 
 				else {
-
 					console.log(" ** no new flow data ** ");
-
 				}
-
 			}
 
 			else if (type == "levl") {
 
-				if (data.index != dist_max_index) {
-
-					chart.series[0].addPoint(pointChart1, true, shift2);
-					console.log(" ** level chart updated ** ");
-					dist_max_index = data.index; // keep track of the max index of the database
-
-				}
-
-				else {
-
-					console.log(" ** no new level data ** ");
-
-				}
-
+				chart.series[0].addPoint(pointChart1, true, shiftLevl);
+				console.log(" ** level chart updated ** ");
+				chart.hideLoading();
+			
 			}
 
 			else {
-
 				console.log(" ** error selecting 'type' ** ");
-
 			}
-
 		}
 
 		else {
-
-			console.log(" ** data status: corrupt / not set ** ");
-
+			//console.log(" ** data status: corrupt / not set ** ");
 		}
 
 	}, "json");
@@ -503,11 +489,15 @@ function init_RT_chart(type, chart, action) {
 				chart.series[1].setData(data.series_cost_data);
 			}
 			
+			else if(type == 'levl'){
+				chart.series[0].setData(data.series_data);
+			}
+			
 			else {
 				chart.series[0].setData(data.series_data);
 			}
 			
-			console.log(" ** chart initialised ** ");
+			console.log(" ** " + type +" chart initialised ** ");
 			chart.hideLoading();
 
 		}
@@ -542,8 +532,7 @@ function load_HS_chart(type, action) {
 
 			console.log(" ** data status: ok ** ");
 			draw_HS_chart(data.type, data.history_data);
-			console.log(" ** chart initialised, '" + data.type
-					+ "' data loaded ** ");
+			console.log(" ** chart initialised, '" + data.type + "' data loaded ** ");
 		}
 
 		else {
@@ -553,4 +542,29 @@ function load_HS_chart(type, action) {
 		}
 
 	}, "json");
+}
+
+
+function init_graph_vars(type, action){
+	
+	return $.post('php/get_data.php/', {
+		dataType : type,
+		actionType : action
+		
+	}, function(data) {
+		
+		if (data.status == 'ok') {
+			console.log(" ** DATA STATUS: ok ** ");
+			maxLitres = data.maxLitres;
+			console.log(" ** system 'MaxLitres' equals:" + maxLitres + " ** ");
+		}
+		
+		else {
+			console.log(" ** data status: corrupt / not set ** ");
+		}
+		
+		return maxLitres;
+		
+	}, "json");
+
 }

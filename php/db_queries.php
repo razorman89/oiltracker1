@@ -1,7 +1,7 @@
 <?php
 
 function getInitTemp($db){
-	$query_tme = mysqli_query($db, "SELECT * FROM (SELECT tempid, tstamp, tempdc FROM temp ORDER BY tempid DESC LIMIT 10) holder ORDER BY tempid ASC;");
+	$query_tme = mysqli_query($db, "SELECT * FROM (SELECT `tempid`, `tstamp`, `tempdc` FROM `temp` ORDER BY `tempid` DESC LIMIT 10) holder ORDER BY `tempid` ASC;");
 	//print_r($query_tme);
 
 	$return_arr = array();
@@ -24,7 +24,7 @@ function getInitTemp($db){
 }
 
 function getInitFlow($db){
-	$query_tme = mysqli_query($db, "SELECT * FROM (SELECT flowid, tstamp, ltrspm, costpm FROM flow ORDER BY flowid DESC LIMIT 10) holder ORDER BY flowid ASC;");
+	$query_tme = mysqli_query($db, "SELECT * FROM (SELECT `statsid`, `tstamp`, `ltrspm`, `costpm` FROM `stats` ORDER BY `statsid` DESC LIMIT 6) holder ORDER BY `statsid` ASC;");
 
 	$return_arr_ltrs = array();
 	$return_arr_cost = array();
@@ -53,33 +53,39 @@ function getInitFlow($db){
 
 	//return $return_arr;
 }
-
+//***************INITIAL LEVEL
 function getInitLevl($db){	
-	$query_tme = mysqli_query($db, "SELECT * FROM (SELECT levlid, tstamp, levlcm FROM levl ORDER BY levlid DESC LIMIT 1) holder ORDER BY levlid ASC;");
-	//print_r($query_tme);
+	//$query_stats = mysqli_query($db, "SELECT `statsid`, `tstamp`, `currentLevel` FROM stats ORDER BY `statsid` DESC LIMIT 1");
+	$query_range = mysqli_query($db, "SELECT `rangeid`, `tstamp`, `currentLevel` FROM `range` ORDER BY `rangeid` DESC LIMIT 1");
 	
 	$return_arr = array();
+	$t = array();
 	
-	while($item = mysqli_fetch_assoc($query_tme)) {
+	while($item = mysqli_fetch_assoc($query_stats)) {
 	
+		$xvalue  = floatval($item['tstamp']);
+		$currentLevel  = floatval($item['currentLevel']);
+		
+		$t[] = $xvalue;
 	
-		$t = array();
-	
-		$float_dat = floatval($item['tstamp']);
-		$float_val = floatval($item['levlcm']);
-	
-		$t[] = $float_dat;
-		$t[] = $float_val;
-	
-		$return_arr[] = $t;
 	}
 	
+	$query_profile = mysqli_query($db, "SELECT AVG(`litres`) AS `avglitres` FROM `profile` WHERE `range` = '$currentLevel'");
+	
+	while ($item = mysqli_fetch_assoc($query_profile)) {
+	
+		$yvalue = floatval($item['avglitres']);
+		
+		$t[] = $yvalue;
+	}	
+	
+	$return_arr[] = $t;
 	return $return_arr;
 	
 }
 
 function getLastTemp($db){
-	$query_tme = mysqli_query($db, "SELECT tempid, tstamp, tempdc FROM temp ORDER BY tempid DESC LIMIT 1");
+	$query_tme = mysqli_query($db, "SELECT `tempid`, `tstamp`, `tempdc` FROM `temp` ORDER BY `tempid` DESC LIMIT 1");
 	
 	while($item = mysqli_fetch_assoc($query_tme)) {
 		
@@ -93,11 +99,11 @@ function getLastTemp($db){
 }
 
 function getLastFlow($db){
-	$query_tme = mysqli_query($db, "SELECT flowid, tstamp, ltrspm, costpm FROM flow ORDER BY flowid DESC LIMIT 1");
+	$query_tme = mysqli_query($db, "SELECT `statsid`, `tstamp`, `ltrspm`, `costpm` FROM `stats` ORDER BY `statsid` DESC LIMIT 1");
 
 	while($item = mysqli_fetch_assoc($query_tme)) {
 
-		$int_index = intval($item['flowid']);
+		$int_index = intval($item['statsid']);
 		$xvalue  = floatval($item['tstamp']);
 		$yvalue  = floatval($item['ltrspm']);
 		$costvalue  = floatval($item['costpm']);
@@ -106,24 +112,68 @@ function getLastFlow($db){
 
 	return $return_arr = json_encode(array('status' => 'ok', 'index' => $int_index, 'xvalue' => $xvalue, 'yvalue' => $yvalue, 'costvalue' => $costvalue));
 }
+//***************LATEST LEVEL
+function getLatestLevl($db){
+	
+	//$query_stats = mysqli_query($db, "SELECT `statsid`, `tstamp`, `currentLevel` FROM stats ORDER BY `statsid` DESC LIMIT 1");
+	$query_range = mysqli_query($db, "SELECT `rangeid`, `tstamp`, `currentlevel` FROM `range` ORDER BY `rangeid` DESC LIMIT 1");
+	while($item = mysqli_fetch_assoc($query_range)) {
 
-function getLastLevl($db){
-	$query_tme = mysqli_query($db, "SELECT levlid, tstamp, levlcm FROM levl ORDER BY levlid DESC LIMIT 1");
+		$time_stamp  = floatval($item['tstamp']);
+		$currentLevel  = floatval($item['currentlevel']);
+
+	}
+	
+	$query_profile_max = mysqli_query($db, "SELECT `litres`, `range` FROM `profile` ORDER BY `profileid` DESC LIMIT 1");
+	while ($item = mysqli_fetch_assoc($query_profile_max)) {
+	
+		$max_litres = floatval($item['litres']);
+		$max_range = floatval($item['range']);
+	}
+	
+	$query_profile_min = mysqli_query($db, "SELECT `range` FROM `profile` ORDER BY `profileid` ASC LIMIT 1");
+	while ($item = mysqli_fetch_assoc($query_profile_max)) {
+	
+		$min_range = floatval($item['range']);
+	}
+	
+	$query_profile_avg = mysqli_query($db, "SELECT AVG(`litres`) AS `avgused` FROM `profile` WHERE `range` = '$currentLevel'");
+	while ($item = mysqli_fetch_assoc($query_profile_avg)) {
+		
+		$avg_used = floatval($item['avgused']);
+	}
+	
+	if($currentLevel >= $min_range AND $currentLevel <= $max_range) {
+		$avg_left = $max_litres - $avg_used;
+	}
+	
+	else if($currentLevel < $min_range) {
+		$avg_left = $max_litres;
+	}
+	
+	else if ($currentLevel > $max_range) {
+		$avg_left = 0.0;
+	}
+	
+	$avg_left = floatval(number_format((float)$avg_left, 2, '.', ''));
+	
+	return $return_arr = json_encode(array('status' => 'ok', 'xvalue' => $time_stamp, 'yvalue' => $avg_left));
+}
+
+function getMaxLitres($db) {
+	$query_tme = mysqli_query($db, "SELECT `litres`, `range` FROM `profile` ORDER BY `profileid` DESC LIMIT 1");
 
 	while($item = mysqli_fetch_assoc($query_tme)) {
 
-		$int_index = intval($item['levlid']);
-		$xvalue  = floatval($item['tstamp']);
-		$yvalue  = floatval($item['levlcm']);
-
+		$maxLitres = floatval($item['litres']);
 	}
 
-	return $return_arr = json_encode(array('status' => 'ok', 'index' => $int_index, 'xvalue' => $xvalue, 'yvalue' => $yvalue));
+	return $maxLitres;
 }
 
-function getTempHistory($db){
+function getTempHistory($db) {
 	
-	$query_tme = mysqli_query($db, "SELECT tstamp, tempdc FROM temp ORDER BY tempid ASC");
+	$query_tme = mysqli_query($db, "SELECT `tstamp`, `tempdc` FROM `temp` ORDER BY `tempid` ASC");
 	
 	$return_arr = array();
 	
@@ -145,9 +195,9 @@ function getTempHistory($db){
 	
 }
 
-function getFlowHistory($db){
+function getFlowHistory($db) {
 
-	$query_tme = mysqli_query($db, "SELECT tstamp, ltrspm FROM flow ORDER BY flowid ASC");
+	$query_tme = mysqli_query($db, "SELECT `tstamp`, `ltrspm` FROM `stats` ORDER BY `statsid` ASC");
 
 	$return_arr = array();
 
@@ -169,29 +219,149 @@ function getFlowHistory($db){
 
 }
 
-function getlevlHistory($db){
-
-	$query_tme = mysqli_query($db, "SELECT tstamp, levlcm FROM levl ORDER BY levlid ASC");
-
+function getlevlHistory($db) {
+	
+	$query_profile_max = mysqli_query($db, "SELECT `litres`, `range` FROM `profile` ORDER BY `profileid` DESC LIMIT 1");
+	while ($item = mysqli_fetch_assoc($query_profile_max)) {
+	
+		$max_litres = floatval($item['litres']);
+		$max_range = floatval($item['range']);
+	}
+	
+	$query_profile_min = mysqli_query($db, "SELECT `range` FROM `profile` ORDER BY `profileid` ASC LIMIT 1");
+	while ($item = mysqli_fetch_assoc($query_profile_max)) {
+	
+		$min_range = floatval($item['range']);
+	}
+	
+	$query_tme = mysqli_query($db, "SELECT `tstamp`, `currentlevel` FROM `stats` ORDER BY `statsid` ASC");
 	$return_arr = array();
-
+	
 	while($item = mysqli_fetch_assoc($query_tme)) {
-
-
+	
 		$t = array();
-
-		$float_dat = floatval($item['tstamp']);
-		$float_val = floatval($item['levlcm']);
-
-		$t[] = $float_dat;
-		$t[] = $float_val;
-
+	
+		$time_stamp = floatval($item['tstamp']);
+		$currentLevel = floatval($item['currentlevel']);
+		
+		$query_profile_avg = mysqli_query($db, "SELECT AVG(`litres`) AS `avgused` FROM `profile` WHERE `range` = '$currentLevel'");
+		while ($item = mysqli_fetch_assoc($query_profile_avg)) {
+		
+			$avg_used = floatval($item['avgused']);
+		}
+		
+		if($currentLevel >= $min_range AND $currentLevel <= $max_range) {
+			$avg_left = $max_litres - $avg_used;
+		}
+		
+		else if($currentLevel < $min_range) {
+			$avg_left = $max_litres;
+		}
+		
+		else if ($currentLevel > $max_range) {
+			$avg_left = 0.0;
+		}
+		
+		$avg_left = floatval(number_format((float)$avg_left, 2, '.', ''));
+	
+		$t[] = $time_stamp;
+		$t[] = $avg_left;
+	
 		$return_arr[] = $t;
 	}
-
+	
 	return $return_arr;
+}
+
+
+function getSettings($db) {
+	
+	$query_tme = mysqli_query($db, "SELECT `isprofiled`, `fuelppl`, `tsleep` FROM `sysadmin` WHERE `sysadminid` = '1'");
+	mysqli_close($db);
+	
+	while($item = mysqli_fetch_assoc($query_tme)) {
+	
+		$isProfiled = intval($item['isprofiled']);
+		$fuelPrice = floatval($item['fuelppl']);
+		$tempRead = floatval($item['tsleep']);
+	}
+	
+	$return_arr = json_encode(array('status' => 'ok', 'profilestatus' => $isProfiled, 'fuelprice' => $fuelPrice, 'tempread' => $tempRead));
+	return $return_arr;
+	
+}
+	
+function updateFuelSettings($db, $newPrice) {
+	
+	mysqli_query($db, "UPDATE `sysadmin` SET `fuelppl` = '$newPrice' WHERE `sysadminid` = '1'");
+	mysqli_close($db);
 
 }
+
+function updateTempSettings($db, $newInterval) {
+	
+	mysqli_query($db, "UPDATE `sysadmin` SET `tsleep` = '$newInterval' WHERE `sysadminid` = '1'");
+	mysqli_close($db);
+
+}
+
+function updateProfileSettings($db, $newStatus){
+	
+	mysqli_query($db, "UPDATE `sysadmin` SET `isprofiled` = '$newStatus' WHERE `sysadminid` = '1'");
+	mysqli_close($db);
+	
+}
+
+function getTankStats($db) {
+	
+	$query_status = mysqli_query($db, "SELECT `isprofiled` FROM `sysadmin` WHERE `sysadminid` = '1'");
+	
+	while ($item = mysqli_fetch_assoc($query_status)) {
+	
+		$is_profiled = intval($item['isprofiled']);
+	}
+	
+	
+	$query_profile_max = mysqli_query($db, "SELECT `litres`, `range` FROM `profile` ORDER BY `profileid` DESC LIMIT 1");
+	while ($item = mysqli_fetch_assoc($query_profile_max)) {
+	
+		$max_litres = floatval($item['litres']);
+		$max_range = floatval($item['range']);
+	}
+	
+	$query_profile_min = mysqli_query($db, "SELECT `range` FROM `profile` ORDER BY `profileid` ASC LIMIT 1");
+	while ($item = mysqli_fetch_assoc($query_profile_min)) {
+	
+		$min_range = floatval($item['range']);
+	}
+	
+	$return_arr = json_encode(array('status' => 'ok', 'profileStatus' => $is_profiled, 'maxRange' => $max_range, 'maxLitres' => $max_litres, 'minRange' => $min_range));
+	return $return_arr;
+	
+}
+
+
+// 	$query_tme = mysqli_query($db, "SELECT `tstamp`, `currentlevel` FROM `stats` ORDER BY `statsid` ASC");
+
+// 	$return_arr = array();
+
+// 	while($item = mysqli_fetch_assoc($query_tme)) {
+
+
+// 		$t = array();
+
+// 		$float_dat = floatval($item['tstamp']);
+// 		$float_val = floatval($item['currentlevel']);
+
+// 		$t[] = $float_dat;
+// 		$t[] = $float_val;
+
+// 		$return_arr[] = $t;
+// 	}
+
+// 	return $return_arr;
+
+
 
 // function populate_date_fields($db) {
 	
