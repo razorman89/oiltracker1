@@ -8,20 +8,24 @@
 	 
 	<script src="js/jquery.js"></script>
 	<script src="highcharts/js/highcharts.js"></script>
+	<script src="highcharts/js/highcharts-more.js"></script>
 	
 	<!-- 
 	<script src="highcharts/js/highcharts.js" type="text/javascript"></script>
 	<script src="highcharts/js/modules/exproting.js" type="text/javascript"></script>
 	-->
+
 	
 	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/charts.js" type="text/javascript"></script>
+	
 	<script src="highcharts/js/themes/gray.js"></script>
+	<script src="js/gauges.js" type="text/javascript"></script>
 	
 	<script type="text/javascript">
 
 	console.log(" ** document ready ** ");
-	var refresh_rate = 1000;
+	var refresh_rate = 2000;
 	var maxLitres = 0;
 	
 	jQuery(document).ready(function() {
@@ -45,15 +49,16 @@
 		}, "json").done(
 
 		function(){
-			
 			draw_RT_charts(maxLitres);
+			draw_RT_gauges2();
 			reScan();
 
 			function reScan() {
+				update_RT_chart(gaugeRT_temp2,"temp", "update", "temp_gauge");
 				console.log(" ** RESCANNING CHART DATA ** ");
-				update_RT_chart("temp", chartRT_temp, "update");
-				update_RT_chart("flow", chartRT_flow, "update");
-				update_RT_chart("levl", chartRT_levl, "update");
+				update_RT_chart(chartRT_temp, "temp", "update", "temp_chart");
+				update_RT_chart(chartRT_flow, "flow", "update", "flow_chart");
+				update_RT_chart(chartRT_levl, "levl", "update", "levl_chart");
 				setTimeout(reScan, refresh_rate);
 			}	
 		});
@@ -68,12 +73,14 @@
 		<div id="header"></div>
 		<div id="header_line"></div>
 	
-		<div id="page_left"></div>
+		<div id="page_left">
+			<div id="current_temp_container"></div>
+		</div>
 		
 		<div id="page_center">
-			<div id="temp_container"></div>
-			<div id="flow_container"></div>
 			<div id="levl_container"></div>
+			<div id="flow_container"></div>
+			<div id="temp_container"></div>
 		</div>
 		
 		<div id="nav_bar">

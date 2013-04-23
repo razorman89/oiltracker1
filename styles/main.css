@@ -1,6 +1,6 @@
 @CHARSET "ISO-8859-1";
 
-body{
+body {
 	
 	background-image: linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
 	background-image: -o-linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
@@ -58,7 +58,7 @@ div#header_line {
 	
 }
 
-div#wrapper{
+div#wrapper {
 	
 	float:center;
 	width:100%;
@@ -68,7 +68,7 @@ div#wrapper{
 	
 }
 
-div#page_left{
+div#page_left {
 	
 	background-color: rgba(0,0,0,0.3);
 	border:solid 1px  rgba(63, 98, 139, 0.7);
@@ -86,7 +86,7 @@ div#page_left{
 	border-bottom-right-radius:30px;
 	
 	float:left;
-	height:850px;
+	height:955px;
 	width:20%;
 	position:relative; 
 	
@@ -96,7 +96,34 @@ div#page_left{
 	
 }
 
-div#page_center{
+div#current_temp_container {
+	
+	border:solid 1px  rgba(63, 98, 139, 0.7);
+	-moz-border-radius-topleft: 30px; 
+	-moz-border-radius-topright:30px; 
+	-moz-border-radius-bottomleft:30px; 
+	-moz-border-radius-bottomright:30px; 
+	-webkit-border-top-left-radius:30px; 
+	-webkit-border-top-right-radius:30px; 
+	-webkit-border-bottom-left-radius:30px;
+	-webkit-border-bottom-right-radius:30px;
+	border-top-left-radius:20px; 
+	border-top-right-radius:20px; 
+	border-bottom-left-radius:20px;
+	border-bottom-right-radius:20px;
+	
+	float:left;
+	height:300px;
+	width:90%;
+	position:relative; 
+	
+	margin-top:12px;
+	margin-left:5%;
+	margin-right:5%;
+	background-color: rgba(0,0,0,0.0);
+}
+
+div#page_center {
 	
 	background-color: rgba(0,0,0,0.3);
 	border:solid 1px  rgba(63, 98, 139, 0.7);
@@ -118,7 +145,7 @@ div#page_center{
 	margin-right:0.5%;
 	
 	float:left;
-	height:850px;
+	height:955px;
 	width:56%;
 	position:relative; 
 	
@@ -128,7 +155,7 @@ div#temp_container {
 	
 	float:center;
 	width:96%;
-	height:265px;
+	height:300px;
 	
 	margin-top:14px;
 	margin-left:auto;
@@ -140,7 +167,7 @@ div#temp_container {
 div#flow_container {
 	
 	width:96%;
-	height:265px;
+	height:300px;
 	
 	margin-top:12px;
 	margin-left:auto;
@@ -151,7 +178,7 @@ div#flow_container {
 div#levl_container {
 	
 	width:96%;
-	height:265px;
+	height:300px;
 	
 	margin-top:12px;
 	margin-left:auto;
@@ -160,7 +187,7 @@ div#levl_container {
 
 }
 
-div#nav_bar{
+div#nav_bar {
 	
 	background-color: rgba(0,0,0,0.3);
 	border:solid 1px  rgba(63, 98, 139, 0.7);
@@ -178,7 +205,7 @@ div#nav_bar{
 	border-bottom-right-radius:30px;
 	
 	float:left;
-	height:850px;
+	height:955px;
 	width:20%;
 	position:relative;
 	
@@ -187,7 +214,7 @@ div#nav_bar{
 	
 }
 
-div#footer_line{
+div#footer_line {
 	
 	background-color: rgba(0,0,0,0.3);
 	border:solid 1px  rgba(63, 98, 139, 0.7);
@@ -213,7 +240,7 @@ div#footer_line{
 		
  }
  
- div#footer_div{
+ div#footer_div {
  
  	float:left;
  	height:40px;
@@ -227,7 +254,7 @@ div#footer_line{
 		
  }
 
-#panel{
+#panel {
 	
 	font-family:Arial,Helvetica,sans-serif;
 	font-weight:bold;
@@ -355,9 +382,7 @@ tankStatus {
 	
 	font-weight: normal;
 	font-size: 10;
-	font-family: Helvetica, Arial;
-	padding: 20px 20px 20px 20px;
-	
+	font-family: Helvetica, Arial;	
 }
 
 tankStatus legend {
@@ -389,10 +414,11 @@ tankStatus input {
 
 tankStatus fieldset {
 	
-	margin-left: 5%;
-	margin-right: 5%;
 	border-radius:5px 5px 5px 5px; 
 	border:solid 1px  rgba(63, 98, 139, 0.7);
 	height: 220px;
+	margin-top:20px;
+	margin-left:5%;
+	margin-right:5%;
 	
 }

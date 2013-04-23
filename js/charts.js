@@ -113,8 +113,12 @@ function draw_RT_charts(maxLitres) {
 
 		series : [ {
 
-			name : 'External Temperature °C',
-			data : []
+			name : 'External Temperature',
+			data : [],
+	        tooltip: {
+	        	valueDecimals : 2,
+	            valueSuffix: ' °C'
+	        }
 
 		} ]
 
@@ -166,7 +170,7 @@ function draw_RT_charts(maxLitres) {
 		yAxis : {
 
 			title : {
-				text : 'Flow in Liters'
+				text : ''
 			}
 
 		},
@@ -178,10 +182,19 @@ function draw_RT_charts(maxLitres) {
 
 		series : [ {
 			name : 'Liters per Minute',
-			data : []
+			data : [],
+	        tooltip: {
+	        	valueDecimals : 2,
+	            valueSuffix: ' L/min'
+	        }
+		
 		}, {
-			name : '€ost per Minute',
-			data : []
+			name : 'Cost per Minute',
+			data : [],
+	        tooltip: {
+	        	valueDecimals : 2,
+	            valuePrefix: '€ '
+	        }
 		}]
 
 	});
@@ -232,9 +245,6 @@ function draw_RT_charts(maxLitres) {
 			type : 'datetime',
 			tickPixelInterval : 150,
 
-			title : {
-				
-			}
 		},
 
 		yAxis : {
@@ -251,9 +261,14 @@ function draw_RT_charts(maxLitres) {
 
 		},
 
-		series : [ {
+		series : [ {		
 			name : 'Litres: ',
-			data : []
+			data : [],
+	        tooltip: {
+	        	valueDecimals : 2,
+	            valueSuffix: ' L'
+	        },		
+
 		} ]
 
 	});
@@ -283,7 +298,6 @@ function draw_HS_chart(type, data) {
 						this.showLoading();
 					}
 				}
-
 			},
 
 			loading : loading_style_HS,
@@ -299,9 +313,10 @@ function draw_HS_chart(type, data) {
 			series : [ {
 				name : 'Temp',
 				data : data,
-				tooltip : {
-					valueDecimals : 2
-				}
+		        tooltip: {
+		        	valueDecimals : 2,
+		            valueSuffix: ' °C'
+		        }
 			} ]
 		});
 		setTimeout(function() {
@@ -337,9 +352,10 @@ function draw_HS_chart(type, data) {
 			series : [ {
 				name : 'Liters per Minute',
 				data : data,
-				tooltip : {
-					valueDecimals : 2
-				}
+		        tooltip: {
+		        	valueDecimals : 2,
+		            valueSuffix: ' L/min'
+		        }
 			} ]
 		});
 		setTimeout(function() {
@@ -373,13 +389,15 @@ function draw_HS_chart(type, data) {
 			},
 
 			series : [ {
-				name : '% in Tank',
+				name : 'Litres in Tank',
 				data : data,
-				tooltip : {
-					valueDecimals : 2
-				}
+		        tooltip: {
+		        	valueDecimals : 2,
+		            valueSuffix: ' L'
+		        }
 			} ]
 		});
+		
 		setTimeout(function() {
 			chartHS_levl.hideLoading();
 		}, 500);
@@ -395,11 +413,11 @@ function draw_HS_chart(type, data) {
  * @see php/get_data.php/
  * @return Json encoded string with single key, value pair of latest databse value
  */
-function update_RT_chart(type, chart, action) {
+function update_RT_chart(chart, dataType, action, chartType) {
 
 	console.log(" ** requesting to update chart data ** ");
 	$.post('php/get_data.php/', {
-		dataType : type,
+		dataType : dataType,
 		actionType : action
 	}, function(data) {
 
@@ -408,11 +426,12 @@ function update_RT_chart(type, chart, action) {
 			console.log(" ** data status: ok ** ");
 			var pointChart1 = new Array(data.xvalue, data.yvalue);
 			var series = chart.series[0];
+			var point = chart.series[0].points[0];
 			var shiftTemp = series.data.length >= 10; // shift after 10 values are loaded
 			var shiftFlow = series.data.length > 7; // shift after 7 values are loaded
 			var shiftLevl = series.data.length > 0; // shift after one value is loaded
 
-			if (type == "temp") {
+			if (chartType == "temp_chart") {
 
 				if (data.index != temp_max_index) {
 
@@ -426,7 +445,7 @@ function update_RT_chart(type, chart, action) {
 				}
 			}
 
-			else if (type == "flow") {
+			else if (chartType == "flow_chart") {
 
 				if (data.index != flow_max_index) {
 					
@@ -442,10 +461,33 @@ function update_RT_chart(type, chart, action) {
 				}
 			}
 
-			else if (type == "levl") {
+			else if (chartType == "levl_chart") {
+				
+				if (data.yvalue <= 2) {
+					console.log(" ** level chart color = red ** ");
+					series.color = '#FB0101';
+				}
+					
+				if (data.yvalue > 2 && data.yvalue <= 5) {
+					console.log(" ** level chart color = amber ** ");
+					series.color = '#F88017';
+				}
+					
+				if (data.yvalue > 5) {
+					console.log(" ** level chart color = green ** ");
+					series.color = '#55BF3B';
+				}
 
-				chart.series[0].addPoint(pointChart1, true, shiftLevl);
+				chart.series[0].addPoint(pointChart1, true, shiftLevl);					
 				console.log(" ** level chart updated ** ");
+				chart.hideLoading();
+			
+			}
+			
+			else if (chartType == "temp_gauge") {
+				
+				point.update(data.yvalue);
+				console.log(" ** current temp gauge updated ** ");
 				chart.hideLoading();
 			
 			}
@@ -456,7 +498,7 @@ function update_RT_chart(type, chart, action) {
 		}
 
 		else {
-			//console.log(" ** data status: corrupt / not set ** ");
+			console.log(" ** data status: corrupt / not set ** ");
 		}
 
 	}, "json");
@@ -547,7 +589,7 @@ function load_HS_chart(type, action) {
 
 function init_graph_vars(type, action){
 	
-	return $.post('php/get_data.php/', {
+	$.post('php/get_data.php/', {
 		dataType : type,
 		actionType : action
 		

@@ -21,7 +21,7 @@
 		load_HS_chart("temp", "history");
 		load_HS_chart("flow", "history");
 		load_HS_chart("levl", "history");
-		    
+				    
 	});
 	</script>
 
@@ -40,9 +40,9 @@
 		</div>
 		
 		<div id="page_center">
-			<div id="temp_container"></div>
-			<div id="flow_container"></div>
 			<div id="levl_container"></div>
+			<div id="flow_container"></div>
+			<div id="temp_container"></div>
 		</div>
 		
 		<div id="nav_bar">
