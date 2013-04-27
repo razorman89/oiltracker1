@@ -15,9 +15,9 @@
 	<script src="highcharts/js/modules/exproting.js" type="text/javascript"></script>
 	-->
 
-	
 	<script src="js/jquery.js" type="text/javascript"></script>
 	<script src="js/charts.js" type="text/javascript"></script>
+	<script src="js/predictions.js" type="text/javascript"></script>
 	
 	<script src="highcharts/js/themes/gray.js"></script>
 	<script src="js/gauges.js" type="text/javascript"></script>
@@ -50,15 +50,18 @@
 
 		function(){
 			draw_RT_charts(maxLitres);
-			draw_RT_gauges2();
+			draw_RT_gauges(maxLitres);
 			reScan();
 
 			function reScan() {
-				update_RT_chart(gaugeRT_temp2,"temp", "update", "temp_gauge");
+				
 				console.log(" ** RESCANNING CHART DATA ** ");
+				update_RT_chart(gaugeRT_temp, "temp", "update", "temp_gauge", maxLitres);
+				update_RT_chart(gaugeRT_levl, "levl", "update", "levl_gauge");
 				update_RT_chart(chartRT_temp, "temp", "update", "temp_chart");
 				update_RT_chart(chartRT_flow, "flow", "update", "flow_chart");
 				update_RT_chart(chartRT_levl, "levl", "update", "levl_chart");
+				make_ST_predictions();
 				setTimeout(reScan, refresh_rate);
 			}	
 		});
@@ -72,14 +75,40 @@
 	
 		<div id="header"></div>
 		<div id="header_line"></div>
-	
+		
 		<div id="page_left">
+			<div id="prediction_container">
+				<predictionStats id="tank_stats">
+	
+					<p>Weekly Cost:
+						<br>
+						<input type="number" id="avgCost" readonly>
+					</p>
+					
+					<p>Weely Usage:
+						<br>
+						<input type="number" id="avgUsage" readonly>	
+					</p>				
+					
+					<p>Tank Fill Date:	
+						<br>
+						<input type="number" id="tankFilledDate" readonly>
+					</p>
+					
+					<p>Predicted Refill Date:
+						<br>
+						<input type="number" id="tankemptyDate" readonly>
+					</p>
+						
+				</predictionStats>
+			</div>
+			<div id="current_level_container"></div>
 			<div id="current_temp_container"></div>
 		</div>
 		
 		<div id="page_center">
-			<div id="levl_container"></div>
 			<div id="flow_container"></div>
+			<div id="levl_container"></div>
 			<div id="temp_container"></div>
 		</div>
 		

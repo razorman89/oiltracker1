@@ -1,6 +1,84 @@
-function draw_RT_gauges2() {
+function draw_RT_gauges(maxLitres) {
 		
-	gaugeRT_temp2 = new Highcharts.Chart({
+	gaugeRT_levl = new Highcharts.Chart({
+		
+	    chart: {
+	        type: 'gauge',
+	        renderTo : 'current_level_container',
+	        alignTicks: false,
+	        plotBackgroundColor: null,
+	        plotBackgroundImage: null,
+	        backgroundColor:'transparent',
+	        plotBorderWidth: 0,
+	        plotShadow: false,
+	    },
+	    
+	    title: {
+	        text: 'Current Tank Level'
+	    },
+	    
+	    pane: {
+	        startAngle: -180,
+	        endAngle: 90,
+	    },
+	       
+	    // the value axis
+	    yAxis: {
+	        min: 0,
+	        max: maxLitres,
+	        
+	        minorTickInterval: 'auto',
+	        minorTickWidth: 1,
+	        minorTickLength: 10,
+	        minorTickPosition: 'inside',
+	        minorTickColor: '#666',
+	
+	        tickPixelInterval: 30,
+	        tickWidth: 2,
+	        tickPosition: 'inside',
+	        tickLength: 10,
+	        tickColor: '#666',
+	        labels: {
+	            step: 2,
+	            rotation: 'auto'
+	        },
+	        title: {
+	            text: 'Litres'
+	        },
+	        plotBands: [{
+	            from: 0,
+	            to: (maxLitres/100)*20,
+	            color: '#DF5353' // red
+	        }, {
+	            from: (maxLitres/100)*21,
+	            to: (maxLitres/100)*45,
+	            color: '#F88017' // orange
+	        }, {
+	            from: (maxLitres/100)*46,
+	            to: (maxLitres/100)*100,
+	            color: '#55BF3B' // green
+	        }]
+	    },
+	
+	    series: [{
+	        name: 'Litres',
+	        data: [0],
+	        dataLabels: {
+	            formatter: function () {
+	                var dc = this.y.toFixed(2)
+	                return '<span style="color:#339">'+ ' ' + dc + ' L</span><br/>'
+	            }
+	        },
+	        
+	        tooltip: {
+	        	valueDecimals : 2,
+	            valueSuffix: ' L'
+	        }
+	    }]
+	
+	})
+	
+	gaugeRT_temp = new Highcharts.Chart({
 		
 	    chart: {
 	        type: 'gauge',
@@ -20,34 +98,6 @@ function draw_RT_gauges2() {
 	    pane: {
 	        startAngle: -170,
 	        endAngle: 170,
-	        background: [{
-	            backgroundColor: {
-	                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-	                stops: [
-	                    [0, '#FFF'],
-	                    [1, '#333']
-	                ]
-	            },
-	            borderWidth: 0,
-	            outerRadius: '109%'
-	        }, {
-	            backgroundColor: {
-	                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-	                stops: [
-	                    [0, '#333'],
-	                    [1, '#FFF']
-	                ]
-	            },
-	            borderWidth: 1,
-	            outerRadius: '107%'
-	        }, {
-	            // default background
-	        }, {
-	            backgroundColor: '#DDD',
-	            borderWidth: 0,
-	            outerRadius: '105%',
-	            innerRadius: '103%'
-	        }]
 	    },
 	       
 	    // the value axis
@@ -71,22 +121,22 @@ function draw_RT_gauges2() {
 	            rotation: 'auto'
 	        },
 	        title: {
-	            text: '°C'
+	            text: 'Celsius'
 	        },
 	        plotBands: [{
 	            from: -55,
 	            to: 0,
 	            color: '#3BB9FF' // blue
 	        }, {
-	            from: 0,
+	            from: 1,
 	            to: 35,
 	            color: '#55BF3B' // green
 	        }, {
-	            from: 35,
+	            from: 36,
 	            to: 65,
 	            color: '#F88017' // orange
 	        }, {
-	            from: 65,
+	            from: 66,
 	            to: 125,
 	            color: '#DF5353' // red
 	        }]
@@ -94,7 +144,7 @@ function draw_RT_gauges2() {
 	
 	    series: [{
 	        name: 'Temperature',
-	        data: [80],
+	        data: [0],
 	        dataLabels: {
 	            formatter: function () {
 	                var dc = this.y.toFixed(2),
@@ -111,22 +161,4 @@ function draw_RT_gauges2() {
 	    }]
 	
 	})
-}
-
-
-function update_gauge(chart) {
-	
-    setInterval(function() {
-        var point = chart.series[0].points[0],
-            newVal, inc = Math.round((Math.random() - 0.5) * 20);
-
-        newVal = point.y + inc;
-        if (newVal < -55 || newVal > 125) {
-            newVal = point.y - inc;
-        }
-
-        point.update(newVal);
-
-    });
-
 }

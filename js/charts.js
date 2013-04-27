@@ -101,7 +101,7 @@ function draw_RT_charts(maxLitres) {
 		yAxis : {
 
 			title : {
-				text : 'Temperature Degrees °C'
+				text : 'Degrees °C'
 			}
 
 		},
@@ -170,9 +170,8 @@ function draw_RT_charts(maxLitres) {
 		yAxis : {
 
 			title : {
-				text : ''
+				text : 'L/€ per Minute'
 			}
-
 		},
 
 		tooltip : {
@@ -413,7 +412,7 @@ function draw_HS_chart(type, data) {
  * @see php/get_data.php/
  * @return Json encoded string with single key, value pair of latest databse value
  */
-function update_RT_chart(chart, dataType, action, chartType) {
+function update_RT_chart(chart, dataType, action, chartType, maxLitres) {
 
 	console.log(" ** requesting to update chart data ** ");
 	$.post('php/get_data.php/', {
@@ -463,17 +462,17 @@ function update_RT_chart(chart, dataType, action, chartType) {
 
 			else if (chartType == "levl_chart") {
 				
-				if (data.yvalue <= 2) {
+				if (data.yvalue <= (maxLitres/100)*20) {
 					console.log(" ** level chart color = red ** ");
 					series.color = '#FB0101';
 				}
 					
-				if (data.yvalue > 2 && data.yvalue <= 5) {
+				if (data.yvalue > (maxLitres/100)*20 && data.yvalue <= (maxLitres/100)*45) {
 					console.log(" ** level chart color = amber ** ");
 					series.color = '#F88017';
 				}
 					
-				if (data.yvalue > 5) {
+				if (data.yvalue > (maxLitres/100)*45) {
 					console.log(" ** level chart color = green ** ");
 					series.color = '#55BF3B';
 				}
@@ -488,6 +487,14 @@ function update_RT_chart(chart, dataType, action, chartType) {
 				
 				point.update(data.yvalue);
 				console.log(" ** current temp gauge updated ** ");
+				chart.hideLoading();
+			
+			}
+			
+			else if (chartType == "levl_gauge") {
+				
+				point.update(data.yvalue);
+				console.log(" ** current levl gauge updated ** ");
 				chart.hideLoading();
 			
 			}

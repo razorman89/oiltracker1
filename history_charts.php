@@ -34,14 +34,12 @@
 		<div id="header_line"></div>
 	
 		<div id="page_left">
-			<div id="temp_settings"></div>
-			<div id="flow_settings"></div>
-			<div id="levl_settings"></div>
+
 		</div>
 		
 		<div id="page_center">
-			<div id="levl_container"></div>
 			<div id="flow_container"></div>
+			<div id="levl_container"></div>
 			<div id="temp_container"></div>
 		</div>
 		

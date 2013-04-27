@@ -1,16 +1,22 @@
 @CHARSET "ISO-8859-1";
 
 body {
+	
+	background-image: linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
+	background-image: -o-linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
+	background-image: -moz-linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
+	background-image: -webkit-linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
+	background-image: -ms-linear-gradient(left top, rgb(41,41,41) 23%, rgb(38,41,87) 62%, rgb(41,41,41) 81%);
 
-	background: rgb(125,126,125); /* Old browsers */
-	background: -moz-linear-gradient(45deg,  rgba(125,126,125,1) 0%, rgba(0,0,0,1) 0%, rgba(56,56,56,1) 34%, rgba(63,63,63,1) 62%, rgba(14,14,14,1) 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,rgba(125,126,125,1)), color-stop(0%,rgba(0,0,0,1)), color-stop(34%,rgba(56,56,56,1)), color-stop(62%,rgba(63,63,63,1)), color-stop(100%,rgba(14,14,14,1))); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(45deg,  rgba(125,126,125,1) 0%,rgba(0,0,0,1) 0%,rgba(56,56,56,1) 34%,rgba(63,63,63,1) 62%,rgba(14,14,14,1) 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(45deg,  rgba(125,126,125,1) 0%,rgba(0,0,0,1) 0%,rgba(56,56,56,1) 34%,rgba(63,63,63,1) 62%,rgba(14,14,14,1) 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(45deg,  rgba(125,126,125,1) 0%,rgba(0,0,0,1) 0%,rgba(56,56,56,1) 34%,rgba(63,63,63,1) 62%,rgba(14,14,14,1) 100%); /* IE10+ */
-	background: linear-gradient(45deg,  rgba(125,126,125,1) 0%,rgba(0,0,0,1) 0%,rgba(56,56,56,1) 34%,rgba(63,63,63,1) 62%,rgba(14,14,14,1) 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		right bottom,
+		color-stop(0.23, rgb(41,41,41)),
+		color-stop(0.62, rgb(38,41,87)),
+		color-stop(0.81, rgb(41,41,41))
+	);
+	
 }
     
 div#header {
@@ -90,62 +96,6 @@ div#page_left {
 	
 }
 
-div#prediction_container {
-	
-	border:solid 1px  rgba(63, 98, 139, 0.7);
-	-moz-border-radius-topleft: 30px; 
-	-moz-border-radius-topright:30px; 
-	-moz-border-radius-bottomleft:30px; 
-	-moz-border-radius-bottomright:30px; 
-	-webkit-border-top-left-radius:30px; 
-	-webkit-border-top-right-radius:30px; 
-	-webkit-border-bottom-left-radius:30px;
-	-webkit-border-bottom-right-radius:30px;
-	border-top-left-radius:20px; 
-	border-top-right-radius:20px; 
-	border-bottom-left-radius:20px;
-	border-bottom-right-radius:20px;
-	
-	float:left;
-	height:295px;
-	width:90%;
-	position:relative; 
-	
-	margin-top:12px;
-	margin-left:5%;
-	margin-right:5%;
-	background-color: rgba(0,0,0,0.0);
-	
-}
-
-div#current_level_container {
-	
-	border:solid 1px  rgba(63, 98, 139, 0.7);
-	-moz-border-radius-topleft: 30px; 
-	-moz-border-radius-topright:30px; 
-	-moz-border-radius-bottomleft:30px; 
-	-moz-border-radius-bottomright:30px; 
-	-webkit-border-top-left-radius:30px; 
-	-webkit-border-top-right-radius:30px; 
-	-webkit-border-bottom-left-radius:30px;
-	-webkit-border-bottom-right-radius:30px;
-	border-top-left-radius:20px; 
-	border-top-right-radius:20px; 
-	border-bottom-left-radius:20px;
-	border-bottom-right-radius:20px;
-	
-	float:left;
-	height:300px;
-	width:90%;
-	position:relative; 
-	
-	margin-top:12px;
-	margin-left:5%;
-	margin-right:5%;
-	background-color: rgba(0,0,0,0.0);
-}
-
-
 div#current_temp_container {
 	
 	border:solid 1px  rgba(63, 98, 139, 0.7);
@@ -171,6 +121,34 @@ div#current_temp_container {
 	margin-left:5%;
 	margin-right:5%;
 	background-color: rgba(0,0,0,0.0);
+}
+
+div#prediction_container {
+	
+	border:solid 1px  rgba(63, 98, 139, 0.7);
+	-moz-border-radius-topleft: 30px; 
+	-moz-border-radius-topright:30px; 
+	-moz-border-radius-bottomleft:30px; 
+	-moz-border-radius-bottomright:30px; 
+	-webkit-border-top-left-radius:30px; 
+	-webkit-border-top-right-radius:30px; 
+	-webkit-border-bottom-left-radius:30px;
+	-webkit-border-bottom-right-radius:30px;
+	border-top-left-radius:20px; 
+	border-top-right-radius:20px; 
+	border-bottom-left-radius:20px;
+	border-bottom-right-radius:20px;
+	
+	float:left;
+	height:300px;
+	width:90%;
+	position:relative; 
+	
+	margin-top:12px;
+	margin-left:5%;
+	margin-right:5%;
+	background-color: rgba(0,0,0,0.0);
+	
 }
 
 div#page_center {
@@ -429,62 +407,92 @@ form fieldset {
 
 /************************/
 tankStats {
+	
 	font-weight: normal;
 	font-size: 10;
 	font-family: Helvetica, Arial;	
 }
 
 tankStats legend {
+
 	color: #F7F7F7;
 	text-transform: uppercase;
+	
 }
 
 tankStats p {
+	
 	color: #279FCA;
 	margin-left: 2%;
 	font-weight: bold;
 }
 
 tankStats input {
+	
 	color: #000000;
 	text-align: center;
 	font-weight: bold;
+	font-family: Helvetica, Arial;
 	border: none;
 	height: 25px;
 	width: 60px;
 	border-radius:5px 5px 5px 5px; 
+	
 }
 
 tankStats fieldset {
+	
 	border-radius:5px 5px 5px 5px; 
 	border:solid 1px  rgba(63, 98, 139, 0.7);
 	height: 220px;
 	margin-top:20px;
 	margin-left:5%;
 	margin-right:5%;
+	
 }
 
 /************************/
 predictionStats {
+	
 	font-weight: normal;
+	font-size: 10;
 	font-family: Helvetica, Arial;	
 }
 
+predictionStats legend {
+
+	color: #F7F7F7;
+	text-transform: uppercase;
+	
+}
+
 predictionStats p {
-	text-align: center;
+	
 	color: #279FCA;
 	margin-left: 2%;
-	font-weight: normal;
+	font-weight: bold;
 }
 
 predictionStats input {
+	
+	color: #000000;
 	text-align: center;
 	font-weight: bold;
-	color: #333399;
+	font-family: Helvetica, Arial;
 	border: none;
 	height: 25px;
-	width: 80%;
+	width: 60px;
 	border-radius:5px 5px 5px 5px; 
-	background-color: #DEDEDE;
-	margin-top: 5px;
+	
+}
+
+predictionStats fieldset {
+	
+	border-radius:15px 15px 15px 15px; 
+	border:solid 1px  rgba(63, 98, 139, 0.7);
+	height: 460px;
+	margin-top:20px;
+	margin-left:5%;
+	margin-right:5%;
+	
 }

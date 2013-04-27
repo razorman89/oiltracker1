@@ -52,7 +52,7 @@
 
 		<div id="page_left">
 		
-			<tankStatus id="tank_stats">
+			<tankStats id="tank_stats">
 				<fieldset>
 					<legend>TANK STATS</legend>	
 					<p>
@@ -72,7 +72,7 @@
 						<input style="margin-left: 5px; background-color: #B6B6B6;" type="number" id="rangeEmpty" readonly>
 					</p>
 				</fieldset>
-			</tankStatus>
+			</tankStats>
 		
 		</div>
 

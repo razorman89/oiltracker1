@@ -340,6 +340,51 @@ function getTankStats($db) {
 	
 }
 
+function makePredictions($db) {
+	
+	$oneWeekMilli = 604800000;
+	$oneMinuteMilli = 60000;
+	$oneHourMilli = 3600000;
+	
+	$currentTimeStamp = (round(microtime(true) * 1000) - $oneHourMilli);
+	
+	$weekAgoTimeStamp = $currentTimeStamp - $oneWeekMilli;
+	
+	$query_avg_weekly_cost = mysqli_query($db, "SELECT `tstamp` FROM `stats` WHERE `tstamp` >= '$weekAgoTimeStamp'");
+	$weekly_litres = mysqli_num_rows($query_avg_weekly_cost);
+	
+	$query_get_fuelprice = mysqli_query($db, "SELECT `fuelppl` FROM `sysadmin` WHERE `sysadminid` = '1'");
+	while($item = mysqli_fetch_assoc($query_get_fuelprice)) {
+		$fuelPrice = floatval($item['fuelppl']);
+	}
+	
+	$weekly_cost = number_format((float)($weekly_litres * $fuelPrice), 2, '.', '');
+	
+	$query_get_fill_date = mysqli_query($db, "SELECT `tstamp` FROM `stats` WHERE `costpm` = '0' ORDER BY `statsid` DESC LIMIT 1");
+	while($item = mysqli_fetch_assoc($query_get_fill_date)) {
+		$fillDate = (floatval($item['tstamp']) - $oneHourMilli);
+	}
+	
+	$query_get_last_flow = mysqli_query($db, "SELECT `ltrspm` FROM `stats` ORDER BY `statsid` DESC LIMIT 1");
+	while($item = mysqli_fetch_assoc($query_get_last_flow)) {
+		$lastestFlowRate = floatval($item['ltrspm']);
+	}
+	
+	$json = getLatestLevl($db);
+	$obj = json_decode($json);
+	$currentLevel = $obj->{'yvalue'};
+	
+	$emptyTimeStamp = round($currentTimeStamp + (($currentLevel / $lastestFlowRate) * $oneMinuteMilli));
+	
+	
+	$fillDateString = date("M jS, Y, g:i a", $fillDate / 1000);
+	$emptyDateString = date("M jS, Y, g:i a", $emptyTimeStamp / 1000);
+	
+	$return_arr = json_encode(array('status' => 'ok', 'weeklyCost' => $weekly_cost, 'weeklyUsage' => $weekly_litres, 'tankFillDate' => $fillDateString, 'tankEmptyDate' => $emptyDateString));
+	return $return_arr;
+	
+}
+
 
 // 	$query_tme = mysqli_query($db, "SELECT `tstamp`, `currentlevel` FROM `stats` ORDER BY `statsid` ASC");
 

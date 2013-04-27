@@ -229,4 +229,23 @@ else if($action_type == "settings_write") {
 
 }
 
+else if($action_type == "make_predictions") {
+	
+	if (mysqli_connect_errno($db)) {
+		console.log(" ** database connect error using default data ** ");
+		echo json_encode(array('status' => 'database_error_update', 'latest_series_data' => 'no data available'));
+	
+	}
+	
+	else {
+	
+		$data_type = $_POST['dataType'];
+		if($data_type == "predictions") {
+			$maxLitres = $_POST['litresMax'];
+			$data = makePredictions($db, $maxLitres);
+			echo $data;
+		}
+	}
+}
+
 ?>
